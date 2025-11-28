@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações</title>
+  <style>
+    body {
+      background-color: var(--bg-color, #0f0f0f);
+      color: var(--text-color, #fff);
+      font-family: "Inter", sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .settings-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background-color: var(--card-bg, #1a1a1a);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      margin-bottom: 16px;
+      font-size: 1.4rem;
+      color: var(--accent-color, #00bcd4);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .field input, .field textarea {
+      background: #222;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      color: #fff;
+      outline: none;
+    }
+
+    .field input:focus, .field textarea:focus {
+      border: 1px solid var(--accent-color, #00bcd4);
+    }
+
+    .btn {
+      background-color: var(--accent-color, #00bcd4);
+      border: none;
+      padding: 10px 16px;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .btn:hover:enabled {
+      background-color: #00acc1;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .back-btn {
+      display: inline-block;
+      background: transparent;
+      border: 1px solid var(--accent-color, #00bcd4);
+      color: var(--accent-color, #00bcd4);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover {
+      background: var(--accent-color, #00bcd4);
+      color: #fff;
+    }
+
+    /* Switches */
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #333;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #555;
+      border-radius: 24px;
+      transition: 0.3s;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-color, #00bcd4);
+    }
+
+    input:checked + .slider::before {
+      transform: translateX(22px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="settings-container">
+
+    <a href="index.html" class="back-btn">← Voltar ao início</a>
+
+    <div class="card">
+      <h2>Conta e Perfil</h2>
+      <div class="field">
+        <label>Foto de perfil</label>
+        <input type="file" accept="image/*">
+      </div>
+      <div class="field">
+        <label>Nome de usuário</label>
+        <input type="text" placeholder="Seu nome">
+      </div>
+      <div class="field">
+        <label>Biografia</label>
+        <textarea rows="3" placeholder="Fale um pouco sobre você..."></textarea>
+      </div>
+      <div class="field">
+        <label>Alterar senha</label>
+        <input type="password" placeholder="Nova senha">
+      </div>
+      <div class="field">
+        <label>Alterar e-mail</label>
+        <input type="email" placeholder="Novo e-mail">
+      </div>
+      <button class="btn" disabled>Salvar alterações</button>
+    </div>
+
+    <div class="card">
+      <h2>Notificações</h2>
+
+      <div class="toggle">
+        <span>Notificações de curtidas</span>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle">
+        <span>Notificações de comentários</span>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle">
+        <span>Novos seguidores</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle">
+        <span>Notificações por e-mail</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle">
+        <span>Silenciar notificações</span>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const saveButton = document.querySelector('.btn');
+    const nomeInput = document.querySelector('input[type="text"]');
+    const emailInput = document.querySelector('input[type="email"]');
+    const bioInput = document.querySelector('textarea');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedData = JSON.parse(localStorage.getItem('userData'));
+      if (savedData) {
+        nomeInput.value = savedData.nome || '';
+        emailInput.value = savedData.email || '';
+        bioInput.value = savedData.bio || '';
+      }
+    });
+
+    let originalData = {};
+    window.addEventListener('load', () => {
+      originalData = {
+        nome: nomeInput.value,
+        email: emailInput.value,
+        bio: bioInput.value
+      };
+    });
+
+    function checkChanges() {
+      const currentData = {
+        nome: nomeInput.value,
+        email: emailInput.value,
+        bio: bioInput.value
+      };
+      const changed =
+        currentData.nome !== originalData.nome ||
+        currentData.email !== originalData.email ||
+        currentData.bio !== originalData.bio;
+      saveButton.disabled = !changed;
+    }
+
+    [nomeInput, emailInput, bioInput].forEach(input => {
+      input.addEventListener('input', checkChanges);
+    });
+
+    saveButton.addEventListener('click', () => {
+      const userData = {
+        nome: nomeInput.value,
+        email: emailInput.value,
+        bio: bioInput.value
+      };
+
+      localStorage.setItem('userData', JSON.stringify(userData));
+      originalData = { ...userData };
+      saveButton.disabled = true;
+
+      const msg = document.createElement('div');
+      msg.textContent = '✅ Alterações salvas com sucesso!';
+      msg.style.position = 'fixed';
+      msg.style.bottom = '20px';
+      msg.style.right = '20px';
+      msg.style.background = 'var(--accent-color, #00bcd4)';
+      msg.style.color = '#fff';
+      msg.style.padding = '12px 16px';
+      msg.style.borderRadius = '10px';
+      msg.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+      msg.style.fontWeight = '500';
+      msg.style.zIndex = '1000';
+      document.body.appendChild(msg);
+
+      setTimeout(() => msg.remove(), 2500);
+    });
+  </script>
+
+</body>
+</html>

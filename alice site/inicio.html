@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Site estilo YouTube (mobile)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0f1b2d;
+      --sidebar: #121f35;
+      --card: #1c2a42;
+      --panel: #1f2d4a;
+      --text: #fff;
+      --muted: #9aa6bf;
+      --primary: #3b82f6;
+      --bottom-bg: #071020;
+      --border: rgba(255,255,255,0.04);
+    }
+    body.light-mode{
+      --bg: #f3f6fa;
+      --sidebar: #e9edf4;
+      --card: #ffffff;
+      --panel: #f7f9fc;
+      --text: #071020;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --bottom-bg: #ffffff;
+      --border: rgba(7,16,32,0.06);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    html,body{height:100%;}
+    body{
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-y:auto;
+    }
+
+    /* Topbar */
+    .topbar{
+      position:sticky;top:0;z-index:1400;
+      display:flex;align-items:center;gap:12px;padding:12px 14px;background:transparent;border-bottom:1px solid var(--border);
+      backdrop-filter: blur(6px);
+    }
+    .menu-btn{font-size:20px;background:none;border:none;color:var(--text);padding:8px;border-radius:8px;cursor:pointer;min-width:44px;min-height:44px;}
+    .brand{font-weight:700;font-size:16px;}
+    .top-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+
+    /* Layout */
+    .app{
+      display:flex;gap:0;min-height:calc(100vh - 56px); /* topbar height */
+    }
+
+    /* Sidebar (desktop) */
+    .sidebar{
+      width:300px;background:var(--sidebar);height:calc(100vh - 56px);position:sticky;top:56px;padding:20px;border-right:1px solid var(--border);
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .nav-link{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;color:var(--text);text-decoration:none;font-weight:600;}
+    .nav-link:hover{background:rgba(255,255,255,0.02);color:var(--primary);}
+
+    /* Main content */
+    main{
+      flex:1;padding:18px;min-height:0; /* avoid double scroll */
+    }
+    .header-card{background:linear-gradient(90deg,#150e36,#2c12ad);padding:28px;border-radius:12px;margin-bottom:14px;}
+    .header-card h1{font-size:18px;margin:0;font-weight:700;}
+
+    /* creators horizontal on mobile */
+    .creators{display:flex;gap:12px;margin-bottom:12px;overflow-x:auto;padding-bottom:6px;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;}
+    .creator{flex:0 0 auto;width:72px;text-align:center;font-size:12px;}
+    .creator img{width:60px;height:60px;border-radius:50%;display:block;margin:0 auto;border:2px solid var(--primary);}
+
+    /* feed (vertical cards) */
+    .feed{display:flex;flex-direction:column;gap:14px;}
+    .video-card{
+      display:flex;gap:12px;align-items:flex-start;background:var(--card);padding:10px;border-radius:12px;border:1px solid var(--border);
+    }
+    .video-thumb{width:40%;min-width:140px;border-radius:8px;overflow:hidden}
+    .video-thumb img{display:block;width:100%;height:auto;}
+    .video-info{flex:1;display:flex;flex-direction:column;gap:6px;}
+    .video-title{font-weight:700;font-size:14px;line-height:1.2;}
+    .video-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;}
+    .channel{display:flex;gap:8px;align-items:center;}
+    .channel img{width:36px;height:36px;border-radius:50%;object-fit:cover}
+
+    /* right panel */
+    .right-panel{
+      width:340px;background:var(--panel);height:calc(100vh - 56px);position:sticky;top:56px;padding:18px;border-left:1px solid var(--border);display:flex;flex-direction:column;gap:12px;overflow:auto;
+    }
+
+    /* bottom nav (mobile) */
+    .bottom-nav{
+      display:none; /* visible on mobile */
+      position:fixed;left:0;right:0;bottom:0;height:64px;background:var(--bottom-bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:1500;
+      gap:6px;padding:6px 8px;
+    }
+    .bottom-btn{background:none;border:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;font-size:12px;cursor:pointer;padding:6px;border-radius:8px;min-width:56px;}
+    .bottom-btn.active{color:var(--primary);font-weight:700;}
+    .bottom-btn .icon{font-size:20px;margin-bottom:4px;}
+
+    /* responsive rules */
+    @media (max-width: 1000px){
+      .sidebar{display:none;}
+    }
+    @media (max-width: 900px){
+      .right-panel{display:none;}
+      .app{min-height:calc(100vh - 56px - 64px);} /* account for bottom nav */
+      .video-thumb{width:40%;min-width:120px;}
+    }
+    @media (max-width:640px){
+      .video-card{padding:8px;}
+      .video-thumb{min-width:120px;}
+    }
+    @media (max-width:520px){
+      .video-thumb{display:block;width:40%;min-width:110px;}
+    }
+
+    /* Mobile specific: feed single column full-width */
+    @media (max-width:900px){
+      .feed{padding-bottom:84px;} /* space for bottom nav */
+      .video-card{flex-direction:column;}
+      .video-thumb{width:100%;min-width:100%;height:auto;}
+      .video-info{width:100%;}
+      .creators{padding-left:4px;padding-right:8px;}
+      .bottom-nav{display:flex;}
+    }
+
+    /* accessibility and tweaks */
+    a,button{font-family:inherit}
+    .sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;}
+  </style>
+</head>
+<body>
+  <div class="topbar" role="banner">
+    <button class="menu-btn" id="menuToggle" aria-label="Abrir menu">☰</button>
+    <div class="brand">Minha Comunidade</div>
+    <div class="top-right">
+      <button id="themeToggle" aria-pressed="false" class="menu-btn" title="Alternar tema">🌙</button>
+      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="perfil" style="width:36px;height:36px;border-radius:50%;object-fit:cover">
+    </div>
+  </div>
+
+  <div class="app" role="application">
+    <!-- Sidebar desktop -->
+    <aside class="sidebar" aria-label="Menu lateral">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+        <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(90deg,#6a5cff,#b44cff);display:flex;align-items:center;justify-content:center;font-weight:700">M</div>
+        <div style="font-weight:700">Minha Comunidade</div>
+      </div>
+
+      <nav aria-label="Navegação principal" style="display:flex;flex-direction:column;gap:6px">
+        <a href="#" class="nav-link" data-tab="inicio">🏠 Início</a>
+        <a href="#" class="nav-link" data-tab="explorar">🔍 Explorar</a>
+        <a href="#" class="nav-link" data-tab="comunidade">👥 Comunidade</a>
+        <a href="#" class="nav-link" data-tab="favoritos">❤️ Favoritos</a>
+        <a href="#" class="nav-link" data-tab="config">⚙️ Configuração</a>
+      </nav>
+
+      <div style="margin-top:auto;font-size:13px;color:var(--muted)">Tema</div>
+      <button id="sidebarTheme" style="background:none;border:1px solid var(--border);padding:8px;border-radius:8px;color:var(--text);cursor:pointer">Alternar tema</button>
+    </aside>
+
+    <!-- Main -->
+    <main>
+      <section class="header-card" aria-hidden="true">
+        <h1>Bem-vindo à comunidade</h1>
+      </section>
+
+      <div class="creators" aria-label="Creators">
+        <!-- avatars roláveis -->
+        <div class="creator"><img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Creator 1"><div style="margin-top:6px;font-weight:700;font-size:12px">Ana</div></div>
+        <div class="creator"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Creator 2"><div style="margin-top:6px;font-weight:700;font-size:12px">João</div></div>
+        <div class="creator"><img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Creator 3"><div style="margin-top:6px;font-weight:700;font-size:12px">Maria</div></div>
+        <div class="creator"><img src="https://randomuser.me/api/portraits/men/56.jpg" alt="Creator 4"><div style="margin-top:6px;font-weight:700;font-size:12px">Carlos</div></div>
+        <div class="creator"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Creator 5"><div style="margin-top:6px;font-weight:700;font-size:12px">Lu</div></div>
+        <div class="creator"><img src="https://randomuser.me/api/portraits/men/70.jpg" alt="Creator 6"><div style="margin-top:6px;font-weight:700;font-size:12px">Pedro</div></div>
+      </div>
+
+      <!-- feed: conteúdo que muda com as abas -->
+      <section id="feed" class="feed" aria-live="polite">
+        <!-- template video cards (pode duplicar conforme necessário) -->
+        <article class="video-card" data-type="inicio">
+          <div class="video-thumb"><img src="https://img.youtube.com/vi/uZdoHYriQi0/maxresdefault.jpg" alt="Miniatura 1"></div>
+          <div class="video-info">
+            <div class="video-title">Filme incrível — trecho 1</div>
+            <div class="video-meta">
+              <div class="channel"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="canal"><div style="font-weight:700">Canal Exemplo</div></div>
+              <div style="margin-left:auto">1.2 mi • 2 dias</div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Descrição curta do vídeo para dar contexto.</div>
+          </div>
+        </article>
+
+        <article class="video-card" data-type="inicio explorar">
+          <div class="video-thumb"><img src="https://img.youtube.com/vi/VANBpN73hPY/maxresdefault.jpg" alt="Miniatura 2"></div>
+          <div class="video-info">
+            <div class="video-title">Explorando lugares — episódio</div>
+            <div class="video-meta">
+              <div class="channel"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="canal"><div style="font-weight:700">Explora</div></div>
+              <div style="margin-left:auto">321k • 1 semana</div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Mini descrição do vídeo de exploração.</div>
+          </div>
+        </article>
+
+        <article class="video-card" data-type="comunidade">
+          <div class="video-thumb"><img src="https://img.youtube.com/vi/IH-wBijX53M/maxresdefault.jpg" alt="Miniatura 3"></div>
+          <div class="video-info">
+            <div class="video-title">Evento da comunidade — highlights</div>
+            <div class="video-meta">
+              <div class="channel"><img src="https://randomuser.me/api/portraits/men/56.jpg" alt="canal"><div style="font-weight:700">Comunidade BR</div></div>
+              <div style="margin-left:auto">12k • 3 dias</div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Highlights e momentos do evento local.</div>
+          </div>
+        </article>
+
+        <article class="video-card" data-type="favoritos">
+          <div class="video-thumb"><img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Miniatura 4"></div>
+          <div class="video-info">
+            <div class="video-title">Favorito antigo — nostalgia</div>
+            <div class="video-meta">
+              <div class="channel"><img src="https://randomuser.me/api/portraits/men/70.jpg" alt="canal"><div style="font-weight:700">Oldies</div></div>
+              <div style="margin-left:auto">8.4 mi • 5 anos</div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Um dos favoritos salvos.</div>
+          </div>
+        </article>
+
+        <article class="video-card" data-type="config">
+          <div class="video-thumb"><img src="https://via.placeholder.com/600x340.png?text=Configura%C3%A7%C3%B5es" alt="Configuração"></div>
+          <div class="video-info">
+            <div class="video-title">Configurações e dicas</div>
+            <div class="video-meta">
+              <div class="channel"><img src="https://randomuser.me/api/portraits/women/22.jpg" alt="canal"><div style="font-weight:700">Suporte</div></div>
+              <div style="margin-left:auto">—</div>
+            </div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px">Ajustes do app, tema e preferências.</div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <!-- Right panel (desktop only) -->
+    <aside class="right-panel" aria-label="Painel lateral">
+      <div style="display:flex;gap:10px;align-items:center">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="perfil" style="width:56px;height:56px;border-radius:50%;object-fit:cover">
+        <div>
+          <div style="font-weight:700">Alice</div>
+          <div style="font-size:13px;color:var(--muted)">Membro</div>
+        </div>
+      </div>
+
+      <div style="background:var(--card);padding:10px;border-radius:10px;border:1px solid var(--border)">
+        <div style="font-weight:700;margin-bottom:6px">Destaque</div>
+        <div style="font-size:13px;color:var(--muted)">Notícias e informações rápidas para a comunidade.</div>
+      </div>
+
+      <div style="margin-top:auto;font-size:13px;color:var(--muted)">
+        © 2025 • Minha Comunidade
+      </div>
+    </aside>
+  </div>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegação inferior">
+    <button class="bottom-btn active" data-tab="inicio" aria-label="Início"><span class="icon">🏠</span><span class="label">Início</span></button>
+    <button class="bottom-btn" data-tab="explorar" aria-label="Explorar"><span class="icon">🔍</span><span class="label">Explorar</span></button>
+    <button class="bottom-btn" data-tab="comunidade" aria-label="Comunidade"><span class="icon">👥</span><span class="label">Comunidade</span></button>
+    <button class="bottom-btn" data-tab="favoritos" aria-label="Favoritos"><span class="icon">❤️</span><span class="label">Favoritos</span></button>
+    <button class="bottom-btn" data-tab="config" aria-label="Configuração"><span class="icon">⚙️</span><span class="label">Config</span></button>
+  </nav>
+
+  <script>
+    // Sidebar toggle (mobile)
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlayId = 'mobileSidebarOverlay';
+    function openSidebarMobile(){
+      // create overlay
+      let overlay = document.getElementById(overlayId);
+      if(!overlay){
+        overlay = document.createElement('div');
+        overlay.id = overlayId;
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.4)';
+        overlay.style.zIndex = '1200';
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', closeSidebarMobile);
+      }
+      sidebar.style.display = 'block';
+      sidebar.style.position = 'fixed';
+      sidebar.style.left = '0';
+      sidebar.style.top = '56px';
+      sidebar.style.height = 'calc(100vh - 56px)';
+      sidebar.style.zIndex = '1300';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebarMobile(){
+      const overlay = document.getElementById(overlayId);
+      if(overlay) overlay.remove();
+      if(window.innerWidth <= 1000){
+        sidebar.style.display = 'none';
+      } else {
+        sidebar.style.display = '';
+        sidebar.style.position = 'sticky';
+      }
+      document.body.style.overflow = '';
+    }
+    menuToggle.addEventListener('click', ()=>{
+      if(window.innerWidth <= 1000){
+        if(sidebar.style.display === 'block') closeSidebarMobile(); else openSidebarMobile();
+      } else {
+        // nothing on desktop (sidebar always visible)
+        sidebar.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    });
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const sidebarTheme = document.getElementById('sidebarTheme');
+    const body = document.body;
+    function applySavedTheme(){
+      const t = localStorage.getItem('theme');
+      if(t === 'light'){
+        body.classList.add('light-mode');
+        themeToggle.textContent = '☀️';
+        themeToggle.setAttribute('aria-pressed','true');
+      } else {
+        body.classList.remove('light-mode');
+        themeToggle.textContent = '🌙';
+        themeToggle.setAttribute('aria-pressed','false');
+      }
+    }
+    applySavedTheme();
+    themeToggle.addEventListener('click', ()=>{
+      body.classList.toggle('light-mode');
+      const is = body.classList.contains('light-mode');
+      localStorage.setItem('theme', is ? 'light' : 'dark');
+      themeToggle.textContent = is ? '☀️' : '🌙';
+      themeToggle.setAttribute('aria-pressed', String(is));
+    });
+    sidebarTheme.addEventListener('click', ()=>{
+      themeToggle.click();
+    });
+
+    // Navigation (sidebar links + bottom nav) -> filter feed
+    const bottomBtns = Array.from(document.querySelectorAll('.bottom-btn'));
+    const sideLinks = Array.from(document.querySelectorAll('.nav-link'));
+    const feed = document.getElementById('feed');
+    const videoCards = Array.from(feed.querySelectorAll('.video-card'));
+
+    function setActiveTab(tab){
+      // bottom buttons
+      bottomBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      // sidebar links
+      sideLinks.forEach(a => a.classList.toggle('active', a.dataset.tab === tab));
+      // show/hide video cards by matching data-type attribute (cards may include multiple types)
+      videoCards.forEach(card => {
+        const types = (card.dataset.type || '').split(' ').map(s=>s.trim()).filter(Boolean);
+        // show card if its types include the tab, or for 'inicio' show cards with no explicit type or with 'inicio'
+        if(types.includes(tab) || (tab === 'inicio' && types.includes('inicio'))){
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      // scroll to top of feed on tab change (mobile behavior like youtube)
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    // initial state -> inicio
+    setActiveTab('inicio');
+
+    // attach events
+    bottomBtns.forEach(b => b.addEventListener('click', ()=> setActiveTab(b.dataset.tab)));
+    sideLinks.forEach(a => a.addEventListener('click', (evt)=>{
+      evt.preventDefault();
+      const tab = a.dataset.tab;
+      setActiveTab(tab);
+      // close mobile sidebar if open
+      if(window.innerWidth <= 1000) closeSidebarMobile();
+    }));
+
+    // keep behavior on resize
+    window.addEventListener('resize', ()=>{
+      if(window.innerWidth > 1000){
+        // show sidebar in desktop
+        sidebar.style.display = '';
+        document.body.style.overflow = '';
+        const ov = document.getElementById(overlayId);
+        if(ov) ov.remove();
+      } else {
+        // ensure sidebar hidden by default on mobiles
+        if(!sidebar.style.display) sidebar.style.display = 'none';
+      }
+    });
+
+    // Accessibility: keyboard navigation for bottom nav
+    bottomBtns.forEach(b => {
+      b.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); }
+      });
+    });
+
+    // Simple improvement: if no cards match (e.g., empty) show message
+    function checkEmpty(){
+      const visible = videoCards.filter(c => c.style.display !== 'none');
+      let noEl = document.getElementById('noContentMsg');
+      if(visible.length === 0){
+        if(!noEl){
+          noEl = document.createElement('div');
+          noEl.id = 'noContentMsg';
+          noEl.style.padding = '18px';
+          noEl.style.color = 'var(--muted)';
+          noEl.style.textAlign = 'center';
+          noEl.textContent = 'Nenhum conteúdo nessa aba ainda.';
+          feed.appendChild(noEl);
+        }
+      } else {
+        if(noEl) noEl.remove();
+      }
+    }
+    // Watch for tab changes: run checkEmpty with a small delay (after setActiveTab)
+    const observer = new MutationObserver(()=>{
+      setTimeout(checkEmpty, 80);
+    });
+    observer.observe(feed, {childList:true,subtree:true});
+    // initial check
+    checkEmpty();
+  </script>
+</body>
+</html>

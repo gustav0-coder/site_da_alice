@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Página Gregório</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0f1b2d;
+      --sidebar-bg: #121f35;
+      --card-bg: #1c2a42;
+      --user-card-bg: #1f2d4a;
+      --text-color: #ffffff;
+      --muted-text: #aaaaaa;
+      --header-gradient: linear-gradient(90deg, #150e36, #2c12ad);
+      --border-color: #1f2d4a;
+    }
+
+    body.light-mode {
+      --bg-color: #c2c6cf;
+      --sidebar-bg: #a9adb3;
+      --card-bg: #d8d4d4;
+      --user-card-bg: #d2d2d3;
+      --text-color: #0f1b2d;
+      --muted-text: #666666;
+      --header-gradient: linear-gradient(90deg, #574ec4, #8216cf);
+      --border-color: #d0d8e8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background-color .25s ease, color .25s ease;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .menu-toggle { font-size: 20px; cursor: pointer; background: none; border: none; color: var(--text-color); }
+    .site-title { font-weight: 600; font-size: 16px; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      height: 100vh;
+      background-color: var(--sidebar-bg);
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: left 0.32s cubic-bezier(.2,.9,.2,1);
+      z-index: 1200;
+      box-shadow: 4px 0 30px rgba(0,0,0,0.35);
+      border-right: 1px solid var(--border-color);
+    }
+    .sidebar.open { left: 0; }
+    .sidebar .close-btn { background: none; border: none; color: var(--text-color); align-self: flex-end; font-size: 18px; cursor: pointer; }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .brand .logo { width:40px; height:40px; border-radius:8px; background:linear-gradient(90deg,#6a5cff,#b44cff); display:flex; align-items:center; justify-content:center; font-weight:700; }
+    .brand .name { font-weight:700; font-size:16px; }
+    .sidebar nav { display:flex; flex-direction:column; gap:12px; margin-top:6px; }
+    .sidebar a, .sidebar button.link-btn { display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text-color); font-size:15px; background:none; border:none; cursor:pointer; padding:8px 6px; border-radius:8px; }
+    .sidebar a:hover, .sidebar button.link-btn:hover { background: rgba(255,255,255,0.02); color:#3b82f6; }
+    .sidebar .section-title { font-size:12px; color:var(--muted-text); margin-top:8px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.02); }
+
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 1100; display: none; }
+    .overlay.show { display: block; }
+
+    /* Conteúdo principal e painel direito */
+    .content-wrapper {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+      gap: 0;
+      padding-right: 340px; /* reserva espaço do painel direito fixo */
+      background-color: var(--bg-color);
+      overflow-y: auto; /* único scroll da página */
+      height: 100vh;
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      min-height: 0;
+    }
+
+    header {
+      background: var(--header-gradient);
+      padding: 70px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      transition: background .25s ease;
+    }
+    header h1 { font-size: 32px; font-weight: 700; color: var(--text-color); line-height:1.05; }
+
+    /* creators - menor e com mais perfis */
+    .creators {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .creator {
+      text-align: center;
+      font-size: 11px;
+      width: 70px;
+    }
+
+    .creator img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      border: 2px solid #3b82f6;
+      display: block;
+      margin: 0 auto;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      object-fit: cover;
+    }
+
+    .creator img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .creator p {
+      margin-top: 4px;
+      color: var(--text-color);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .videos-section { margin-top: 30px; }
+    .videos-section h2 { font-size: 22px; font-weight: 700; color: var(--text-color); margin-bottom: 16px; }
+
+    .videos-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+    }
+
+    .videos-grid a {
+      flex: 1 1 calc(33.33% - 20px);
+      max-width: 400px;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .videos-grid a:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); }
+    .videos-grid img { width: 100%; height: auto; display: block; border-radius: 12px; }
+
+    @media (max-width: 900px) {
+      .videos-grid a { flex: 1 1 100%; max-width: none; }
+      .right-panel { display: none; }
+      .content-wrapper { padding-right: 0; }
+    }
+
+    /* painel direito — fixo e imutável */
+    .right-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 340px;
+      background-color: var(--sidebar-bg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      border-left: 1px solid var(--border-color);
+      overflow: hidden; /* sem scroll interno */
+      box-shadow: -4px 0 30px rgba(0, 0, 0, 0.25);
+      transition: background-color .25s ease, border-color .25s ease;
+      z-index: 100;
+    }
+
+    .user-card, .nft-card, .activity-section {
+      background: var(--user-card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text-color);
+      transition: background-color .25s ease, color .25s ease;
+    }
+
+    .user-card { display:flex; gap:12px; align-items:center; border-radius:16px; padding:16px; background: linear-gradient(90deg,#2b3562,#3c297a); }
+    .user-card img { width:54px; height:54px; border-radius:50%; object-fit:cover; border: 2px solid rgba(255,255,255,0.06); }
+    .user-card div h4 { margin:0; font-size:15px; color:#fff; font-weight:700; }
+    .user-card div p { margin:0; font-size:12px; color:#cfcfe0; }
+
+    .nft-card img { width:100%; height:150px; border-radius:8px; object-fit:cover; margin-bottom:8px; background:#2b3b55; }
+    .nft-card .nft-info { display:flex; justify-content:space-between; align-items:center; }
+
+    .activity-section h4 { font-size:14px; color:var(--muted-text); margin-bottom:10px; }
+    .activity-section ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+    .activity-section li { background: var(--card-bg); padding:8px 10px; border-radius:8px; font-size:13px; color:var(--text-color); display:flex; justify-content:space-between; align-items:center; }
+    .activity-section a { color:inherit; text-decoration:none; display:block; width:100%; }
+    .activity-section a:hover { text-decoration:underline; }
+    .activity-section .time { font-size:11px; color:var(--muted-text); margin-left:10px; }
+
+    .show-more { background:#3b82f6; border:none; color:white; width:100%; padding:8px; border-radius:8px; cursor:pointer; margin-top:8px; }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+    <div class="site-title">Menu</div>
+  </div>
+
+  <nav class="sidebar" id="sidebar" aria-hidden="true">
+    <button class="close-btn" id="closeSidebar" aria-label="Fechar menu">✖</button>
+
+    <div class="brand">
+      <div class="logo">M</div>
+      <div class="name">Menu</div>
+    </div>
+
+    <nav>
+      <a href="index.html"><span>🏠</span> Início</a>
+      <a href="explorar.html"><span>🧭</span> Explorar</a>
+      <a href="comunidade.html"><span>🏆</span> Comunidade</a>
+      <a href="favoritos.html"><span>❤️</span> Favoritos</a>
+
+      <div class="section-title">Preferências</div>
+      <button class="link-btn" id="themeToggle" aria-pressed="false"><span class="icon">🌙</span>Tema Claro</button>
+      <a href="configuração.html"><span class="icon">⚙️</span> Configuração</a>
+    </nav>
+  </nav>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="content-wrapper">
+    <div class="main">
+      <header>
+        <h1>Discover, collect, sell, and <br>create your own <span style="color:#8bb7ff">NFTs</span></h1>
+      </header>
+
+      <div class="creators">
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Alex Chen">
+          <p>Alex Chen</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Maria Silva">
+          <p>Maria Silva</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/men/56.jpg" alt="John Artist">
+          <p>John Artist</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/women/58.jpg" alt="Sarah Kim">
+          <p>Sarah Kim</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/men/60.jpg" alt="Mike Johnson">
+          <p>Mike Johnson</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Ana Costa">
+          <p>Ana Costa</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/men/70.jpg" alt="David Lee">
+          <p>David Lee</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emma Wilson">
+          <p>Emma Wilson</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/men/24.jpg" alt="Lucas Pereira">
+          <p>Lucas Pereira</p>
+        </div>
+        <div class="creator">
+          <img src="https://randomuser.me/api/portraits/women/47.jpg" alt="Julia Santos">
+          <p>Julia Santos</p>
+        </div>
+      </div>
+
+      <section class="videos-section">
+        <h2>Videos</h2>
+        <div class="videos-grid">
+          <a href="https://www.youtube.com/watch?v=uZdoHYriQi0" target="_blank">
+            <img src="https://img.youtube.com/vi/uZdoHYriQi0/maxresdefault.jpg" alt="Filme 1">
+          </a>
+          <a href="https://youtu.be/VANBpN73hPY?si=cMrnTml7NNA-jiTR" target="_blank">
+            <img src="https://img.youtube.com/vi/VANBpN73hPY/maxresdefault.jpg" alt="Filme 2">
+          </a>
+          <a href="https://www.youtube.com/watch?v=IH-wBijX53M" target="_blank">
+            <img src="https://img.youtube.com/vi/IH-wBijX53M/maxresdefault.jpg" alt="Filme 3">
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- PAINEL DIREITO: fixo e imóvel -->
+    <aside class="right-panel" aria-label="Painel lateral">
+      <div class="user-card">
+        <img src="https://ai-previews.123rf.com/ai-txt2img/600nwm/58920974-ade1-46f7-8a20-57562cca0a62.jpg" alt="Avatar">
+        <div>
+          <h4>Alice</h4>
+          <p>Batatavoadora</p>
+        </div>
+      </div>
+
+      <div class="nft-card">
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/..." alt="Destaque">
+        <div class="nft-info">
+          <h5>Comunidade</h5>
+        </div>
+      </div>
+
+      <div class="activity-section">
+        <h4>Atividades Recentes</h4>
+        <ul>
+          <li><a href="#" target="_blank" rel="noopener">Nova UBS em construção na Vila Paulina</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Ruas recebem revitalização e iluminação LED</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Feira cultural prevista para outubro</a></li>
+        </ul>
+        <button class="show-more">Ver mais notícias</button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const overlay = document.getElementById('overlay');
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      sidebar.setAttribute('aria-hidden', 'false');
+      overlay.classList.add('show');
+    });
+
+    closeSidebar.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebar.setAttribute('aria-hidden', 'true');
+      overlay.classList.remove('show');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebar.setAttribute('aria-hidden', 'true');
+      overlay.classList.remove('show');
+    });
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      body.classList.add('light-mode');
+      themeToggle.querySelector('.icon').textContent = '☀️';
+      themeToggle.setAttribute('aria-pressed', 'true');
+    } else {
+      themeToggle.querySelector('.icon').textContent = '🌙';
+      themeToggle.setAttribute('aria-pressed', 'false');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      const isLight = body.classList.contains('light-mode');
+      if (isLight) {
+        localStorage.setItem('theme', 'light');
+        themeToggle.querySelector('.icon').textContent = '☀️';
+        themeToggle.setAttribute('aria-pressed', 'true');
+      } else {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.querySelector('.icon').textContent = '🌙';
+        themeToggle.setAttribute('aria-pressed', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        sidebar.setAttribute('aria-hidden', 'true');
+        overlay.classList.remove('show');
+      }
+    });
+  </script>
+
+</body>
+</html>

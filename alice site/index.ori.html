@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel NFT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: #0f1b2d;
+      color: #fff;
+      display: flex;
+      height: 100vh; /* altura total da tela */
+    }
+
+    .sidebar {
+      width: 70px;
+      background-color: #121f35;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar button {
+      background: none;
+      border: none;
+      margin: 15px 0;
+      cursor: pointer;
+    }
+
+    .content-wrapper {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    header {
+      background: linear-gradient(90deg, #1a237e, #8e24aa);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .video-card {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .creators {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .creator {
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .creator img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #3b82f6;
+    }
+
+    .videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .video-card {
+      background-color: #1c2a42;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .video-thumb {
+      height: 180px;
+      background-color: #2b3b55;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+    }
+
+    .video-info {
+      padding: 10px;
+    }
+
+    .video-info h3 {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .video-info p {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .right-panel {
+      width: 280px;
+      background-color: #121f35;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .perfil {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .perfil img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+    }
+
+    .perfil div {
+      font-size: 14px;
+    }
+
+    .acoes h4,
+    .metricas h4,
+    .atividade h4 {
+      margin: 20px 0 10px;
+      font-size: 13px;
+      color: #bbb;
+    }
+
+    .acoes ul,
+    .metricas ul,
+    .atividade ul {
+      list-style: none;
+      font-size: 13px;
+      color: #ddd;
+    }
+
+    .acoes li,
+    .metricas li,
+    .atividade li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <button>🏠</button>
+    <button>📂</button>
+    <button>📊</button>
+    <button>⚙️</button>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="main">
+      <header>
+        <h1>Descubra, colete, venda e crie seus próprios NFTs</h1>
+      </header>
+
+      <div class="creators">
+        <div class="creator"><img src="https://via.placeholder.com/50" alt="">
+          <p>Ana</p>
+        </div>
+        <div class="creator"><img src="https://via.placeholder.com/50" alt="">
+          <p>João</p>
+        </div>
+        <div class="creator"><img src="https://via.placeholder.com/50" alt="">
+          <p>Maria</p>
+        </div>
+      </div>
+
+      <div class="videos">
+        <a href="file:///C:/Users/GustavoDeSouzaSantos/Desktop/site/abaDeVideo.html" target="_blank" class="video-card">
+          <div class="video-thumb">🎥</div>
+          <div class="video-info">
+            <h3>Tutorial de Criação de NFT</h3>
+            <p>Masterclass em Arte Digital</p>
+          </div>
+        </a>
+
+        <a href="https://www.youtube.com/watch?v=EXEMPLO2" target="_blank" class="video-card">
+          <div class="video-thumb">🎥</div>
+          <div class="video-info">
+            <h3>Técnicas avançadas de arte digital</h3>
+            <p>Para iniciantes</p>
+          </div>
+        </a>
+
+        <a href="https://www.youtube.com/watch?v=EXEMPLO3" target="_blank" class="video-card">
+          <div class="video-thumb">🎥</div>
+          <div class="video-info">
+            <h3>Tecnologia Blockchain</h3>
+            <p>Explicada de forma simples</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="perfil">
+        <img src="https://via.placeholder.com/45" alt="">
+        <div>
+          <strong>Adem Lima</strong><br>
+          Membro Premium
+        </div>
+      </div>
+      <div class="acoes">
+        <h4>Ações rápidas</h4>
+        <ul>
+          <li>Perfil</li>
+          <li>Itens salvos</li>
+          <li>Análises</li>
+          <li>Configurações</li>
+        </ul>
+      </div>
+      <div class="metricas">
+        <h4>Suas métricas</h4>
+        <ul>\
+          <li>Conquistas</li>
+          <li>Favoritos</li>
+          <li>Seguidores</li>
+        </ul>
+      </div>
+      <div class="atividade">
+        <h4>Atividade recente</h4>
+        <ul>
+          <li>Gustavo começou um curso</li>
+          <li>Sarah Dias salvou um vídeo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
